@@ -1,0 +1,7 @@
+namespace CodeBase.Infrastructure.States.Interfaces
+{
+    public interface IState : IExitableState
+    {
+        void Enter();
+    }
+}
