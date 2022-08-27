@@ -60,7 +60,10 @@ namespace CodeBase.Battle.Logic
             if (CurrentHealth <= 0)
             {
                 OnDie?.Invoke(_team);
-                _windowService.Open(WindowId.LoseWindow);
+                if (_team == TeamType.Player)
+                {
+                    _windowService.Open(WindowId.LoseWindow);
+                }
             }
         }
 
