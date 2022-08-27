@@ -1,40 +1,54 @@
 using System;
+using CodeBase.Infrastructure.Services.UI.Elements;
+using CodeBase.Infrastructure.Services.Windows;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace CodeBase.Infrastructure.Services.Input
 {
     public class MobileInputService : IInputService
     {
-        private DefaultActions.GameLoopActions _inputActions;
-        private Camera _mainCamera;
-        
-        public event Action<Vector2> OnClickPosition;
-        public event Action<Ray> OnClickRay;
+        private readonly InputPanel _inputPanel;
+        private bool _blockingState = false;
+        public event Action<ButtonType> OnButtonClick;
+        public event Action<bool> OnChangeBlockingState;
 
-        public MobileInputService()
+
+        public MobileInputService(InputPanel inputPanel)
         {
-            _inputActions = new DefaultActions().GameLoop;
-            _inputActions.Click.performed += _ => OnCLickInvoke();
-            EnableInput();
+            _inputPanel = inputPanel;
         }
 
+
         public void EnableInput()
-            => _inputActions.Enable();
+        {
+            foreach (ButtonWithType button in _inputPanel.ButtonList)
+            {
+                button.Button.onClick.AddListener(() => OnButtonClick?.Invoke(button.Type));
+                if (button.Type == ButtonType.Block)
+                {
+                    button.Button.OnPointerDownEvent += ChangeBlockingState;
+                    button.Button.OnPointerUpEvent += ChangeBlockingState;
+                }
+            }
+        }
 
         public void DisableInput()
-            => _inputActions.Disable();
-
-        private void OnCLickInvoke()
         {
-            _mainCamera ??= Camera.main;
-            Vector2 screenPosition = _inputActions.Position.ReadValue<Vector2>();
-            
-            Vector3 worldPosition = _mainCamera.ScreenToWorldPoint(screenPosition);
-            OnClickPosition?.Invoke(worldPosition);
-            
-            Ray clickRay = _mainCamera.ScreenPointToRay(screenPosition);
-            OnClickRay?.Invoke(clickRay);
+            foreach (ButtonWithType button in _inputPanel.ButtonList)
+            {
+                button.Button.onClick.RemoveAllListeners();
+                if (button.Type == ButtonType.Block)
+                {
+                    button.Button.OnPointerDownEvent -= ChangeBlockingState;
+                    button.Button.OnPointerUpEvent -= ChangeBlockingState;
+                }
+            }
+        }
+
+        private void ChangeBlockingState()
+        {
+            _blockingState = !_blockingState;
+            OnChangeBlockingState?.Invoke(_blockingState);
         }
     }
 }

@@ -5,8 +5,8 @@ namespace CodeBase.Infrastructure.Services.Input
 {
     public interface IInputService : IService
     {
-        event Action<Vector2> OnClickPosition;
-        event Action<Ray> OnClickRay;
+        event Action<ButtonType> OnButtonClick; 
+        event Action<bool> OnChangeBlockingState;
         
         void EnableInput();
         void DisableInput();

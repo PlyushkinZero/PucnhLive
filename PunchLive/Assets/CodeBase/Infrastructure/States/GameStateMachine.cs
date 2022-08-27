@@ -1,26 +1,30 @@
 using System;
 using System.Collections.Generic;
+using CodeBase.Battle.Logic.Battle;
+using CodeBase.Infrastructure.LevelManagement;
 using CodeBase.Infrastructure.Services;
+using CodeBase.Infrastructure.Services.Factories.Interfaces;
 using CodeBase.Infrastructure.Services.Input;
+using CodeBase.Infrastructure.Services.Windows;
 using CodeBase.Infrastructure.States.Interfaces;
 using UnityEngine;
 
 namespace CodeBase.Infrastructure.States
 {
-    public class GameStateMachine
+    public class GameStateMachine : IGameStateMachine
     {
         private readonly Dictionary<Type, IExitableState> _states;
         private IExitableState _activeState;
 
         public GameStateMachine(SceneLoader sceneLoader, ServiceLocator serviceLocator,
-            RectTransform uiRoot)
+            RectTransform uiRoot, InputPanel inputPanel, ICoroutineRunner coroutineRunner, LevelManager levelManager)
         {
             _states = new Dictionary<Type, IExitableState>()
             {
-                [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator, uiRoot),
-                [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader),
-                [typeof(GameLoopState)] = new GameLoopState(this),
-                [typeof(PauseMenuState)] = new PauseMenuState(this, serviceLocator.Single<IInputService>(), serviceLocator.Single<IWindowService>())
+                [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, serviceLocator, uiRoot, inputPanel, coroutineRunner, levelManager),
+                [typeof(LoadLevelState)] = new LoadLevelState(this, sceneLoader, serviceLocator.Single<IPlayerFactory>(), serviceLocator.Single<IEnemyFactory>(), inputPanel, serviceLocator.Single<IAttackReadingService>(), serviceLocator.Single<IWindowService>()),
+                [typeof(GameLoopState)] = new GameLoopState(this, serviceLocator.Single<IInputService>()),
+                [typeof(BattleResultState)] = new BattleResultState(this, serviceLocator.Single<IWindowService>(), levelManager)
             };
         }
             

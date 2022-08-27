@@ -6,7 +6,10 @@ namespace CodeBase.Infrastructure.Services.UI
 {
     public class UIFactory : IUIFactory
     {
-        private const string PauseMenuPath = "UI/PauseMenu";
+        private const string HudPath = "UI/Hud";       
+        private const string WinWindowPath = "UI/WinWindow";
+        private const string LoseWindowPath = "UI/LoseWindow";
+        
         private readonly IAssetProvider _assets;
         private readonly RectTransform _uiRoot;
 
@@ -16,11 +19,25 @@ namespace CodeBase.Infrastructure.Services.UI
             _uiRoot = uiRoot;
         }
 
-        public PauseWindow CreatePauseWindow()
+        public Hud CreateHud()
         {
-            GameObject pauseWindow = _assets.Instantiate(PauseMenuPath);
-            pauseWindow.transform.SetParent(_uiRoot, false);
-            return pauseWindow.GetComponent<PauseWindow>();
+            GameObject hud = _assets.Instantiate(HudPath);
+            hud.transform.SetParent(_uiRoot, false);
+            return hud.GetComponent<Hud>();
+        }
+
+        public WinWindow CreateWinWindow()
+        {
+            GameObject winWindow = _assets.Instantiate(WinWindowPath);
+            winWindow.transform.SetParent(_uiRoot, false);
+            return winWindow.GetComponent<WinWindow>();
+        }
+
+        public LoseWindow CreateLoseWindow()
+        {
+            GameObject loseWindow = _assets.Instantiate(LoseWindowPath);
+            loseWindow.transform.SetParent(_uiRoot, false);
+            return loseWindow.GetComponent<LoseWindow>();
         }
     }
 }
