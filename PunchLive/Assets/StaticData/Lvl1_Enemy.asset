@@ -19,7 +19,7 @@ MonoBehaviour:
   Attacks:
   - {fileID: 11400000, guid: 4a207041dc6317a4bb267416a1902219, type: 2}
   - {fileID: 11400000, guid: dbe9fa0f095187545bd54ad5b5dc1ca5, type: 2}
-  ChanceToStandUp: 0
+  ChanceToStandUp: 0.5
   ChanceToBlock: 0.3
   MinimalPauseBetweenAttacks: 0.5
   MaximalPauseBetweenAttacks: 3.5
